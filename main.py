@@ -15,14 +15,14 @@ def diff_compute(xmlsrc, newsrc):
 	base_path = os.path.dirname(os.path.realpath(__file__))
 	xml_tree = ET.parse(os.path.join(base_path, xmlsrc))
 	subtrees = xml_tree.getroot()
-
 	try:
-		old_file_raw = open(os.path.join(base_path, 'old_attrib.dat'), 'w', encoding = 'utf-8')
-		for data in subtrees.iter('orgName'):
-			old_file_raw.write(data.text + '\n')
-		old_file_raw.close()
+		with open(os.path.join(base_path, 'old_attrib.dat'), 'w', encoding = 'utf-8') as old_file_raw:
+			for data in subtrees.iter('orgName'):
+				old_file_raw.write(data.text + '\n')
+		
 		old_file = open('old_attrib.dat', 'r', encoding = 'utf-8').read().split('\n')
 		old_set = set(old_file)
+		os.remove('old_attrib.dat')
 		new_file = open(os.path.join(base_path, newsrc), 'r', encoding = 'utf-8').read().split('\n')
 		new_set = set(new_file)
 		for data in new_set:
@@ -34,6 +34,7 @@ def diff_compute(xmlsrc, newsrc):
 			return 'None'
 	except:
 		raise RuntimeError ('Fatal error: something went wrong while building data sets of files')
+
 
 def main():
 	# define names for the .xml file to parse and the dat file with new attributes to compare with
