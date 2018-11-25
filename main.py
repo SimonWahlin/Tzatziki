@@ -2,19 +2,16 @@
 import os
 import xml.etree.ElementTree as ET
 
-def diff_compute(xmlsrc, newsrc):
-	'''
-	diff_compute takes xml file being parsed and the file containing new data as arguments.
-	The data of interest in the xml file is located in elements where 'OrgName' is described. 
-	The data is added to set, as will every line from the .dat fiile containing the new data. 
-	The sets are compared and differing values are added to diff[] and returned.
-	'''
+def compute_diff(xmlsrc, newsrc):
+
 	old = set()
 	new = set()
 	diff = []
+
 	base_path = os.path.dirname(os.path.realpath(__file__))
 	tree = ET.parse(os.path.join(base_path, xmlsrc))
 	root = tree.getroot()
+	
 	try:
 		new_file = open(newsrc,'r',encoding='utf-8').read().split('\n')
 		for line in new_file: new.add(line)
@@ -32,27 +29,17 @@ def diff_compute(xmlsrc, newsrc):
 		raise RuntimeError ('Fatal error: something went wrong while building data sets of files')
 
 
-def main():
-	# define names for the .xml file to parse and the dat file with new attributes to compare with
-	xml_file = 'GADS_ADM.xml'
-	new_file = 'new.dat'
-	diff_len = 0
-	diff = diff_compute(xml_file, new_file)
+def find_highest_priority():
 
-	if diff != 'None':
-		diff_len = len(diff)
-		print('\n', '* There are',str(diff_len),'new attributes:','\n')
-		for line in diff: 
-			print(line, sep = ' ', end = '\n')
-		# datablocks = build(diff) >> Not built! <<
-	else:
-		print('No diff today - .xml file manifest is up to date.')
+	pass
+	# find the highest integer in <priority> for every child parsed
+	# return integer +1 to start building from.
+	# root.findall('plugins/local/plugin/config/users/search/priority')
 
-if __name__ == '__main__':
-	main()
 
-def build(diff)
+def build_element(diff)
 	
+	pass
 	# for every line of text in diff[]:
 		# line is part of xml element, attribute orgName
 		# xml element has attributes
@@ -65,3 +52,18 @@ def build(diff)
 		# save source file
 
 	# verify correctly saved data
+
+
+def main():
+	# define names for the .xml file to parse and the dat file with new attributes to compare with
+	xml_file = 'GADS_ADM.xml'
+	new_file = 'new.dat'
+	diff = compute_diff(xml_file, new_file)
+
+	if diff != 'None':
+		# datablocks = build(diff) >> Not built! <<
+	else:
+		print('No diff today - XML file is up to date.')
+
+if __name__ == '__main__':
+	main()
