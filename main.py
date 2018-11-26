@@ -1,40 +1,70 @@
 
+
 import os
 import xml.etree.ElementTree as ET
 
-def compute_diff(xmlsrc, newsrc):
 
-	old = set()
-	new = set()
-	diff = []
-
-	base_path = os.path.dirname(os.path.realpath(__file__))
-	tree = ET.parse(os.path.join(base_path, xmlsrc))
-	root = tree.getroot()
-	
+def get_xml_root(xml_source):
 	try:
-		new_file = open(newsrc,'r',encoding='utf-8').read().split('\n')
-		for line in new_file: new.add(line)
-		del new_file
+		base_path = os.path.dirname(os.path.realpath(__file__))
+		tree = ET.parse(os.path.join(base_path, xml_source))
+		xml_root = tree.getroot()
+		return xml_root
+	except:
+		raise RuntimeError ('error occured parsing .xml file for root')
+
+# parse xml for element data
+def get_old_data(xml_root):
+	old = set()
+	try:
 		for line in root.iter('orgName'):
 			old.add(line.text)
-		for line in new:
-			if not line in old and not '\ufeff' in line:
-				diff.append(line)
-		if diff and len(diff) > 1: 
+		return old
+	except:
+		raise RuntimeError ('error occured while parsing .xml file for data')
+
+
+# parse file containing new data
+def get_new_data(new_source):
+	new = set()
+	try:
+		with open(new_source,'r',encoding='utf-8') as new_file:
+			new_file = new_file.read().split('\n')
+			for line in new_file:
+				new.add(line)
+			return new
+	except:
+		raise RuntimeError ('error occured while parsing file with new data')
+
+
+# using this integer to start from, with new elements that will get created.
+def highest_priority_int():
+	highest = int()
+	prio_arr = []
+	root = get_xml_root('GADS_ADM.xml')
+	prio_int = root.findall('plugins/local/plugin/config/users/search/priority')
+	for elem in prio:
+		num = int(elem.text)
+		prio_arr.append(num)
+	highest = max(prio_arr)
+	return highest
+
+
+# calculate diff between the new and old sets
+def compute_diff():
+	diff = []
+	root = get_xml_root('GADS_ADM.xml')
+	old_set = get_old_data(root)
+	new_set = get_new_data('new.dat')
+	for line in new_set: 
+		if not line in old_set and not '\ufeff' in line:
+			diff.append(line)
+		if len(diff) > 1:
 			return diff
 		else: 
 			return 'None'
 	except:
 		raise RuntimeError ('Fatal error: something went wrong while building data sets of files')
-
-
-def find_highest_priority():
-
-	pass
-	# find the highest integer in <priority> for every child parsed
-	# return integer +1 to start building from.
-	# root.findall('plugins/local/plugin/config/users/search/priority')
 
 
 def build_element(diff)
@@ -55,10 +85,8 @@ def build_element(diff)
 
 
 def main():
-	# define names for the .xml file to parse and the dat file with new attributes to compare with
-	xml_file = 'GADS_ADM.xml'
-	new_file = 'new.dat'
-	diff = compute_diff(xml_file, new_file)
+
+	diff = compute_diff()
 
 	if diff != 'None':
 		# datablocks = build(diff) >> Not built! <<
