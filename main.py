@@ -14,10 +14,10 @@ def get_xml_root(xml_source):
 		raise RuntimeError ('error occured parsing .xml file for root')
 
 # parse xml for element data
-def get_old_data(xml_root):
+def get_old_data(xmlroot):
 	old = set()
 	try:
-		for line in root.iter('orgName'):
+		for line in xmlroot.iter('orgName'):
 			old.add(line.text)
 		return old
 	except:
@@ -56,10 +56,11 @@ def compute_diff():
 	root = get_xml_root('GADS_ADM.xml')
 	old_set = get_old_data(root)
 	new_set = get_new_data('new.dat')
-	for line in new_set: 
-		if not line in old_set and not '\ufeff' in line:
-			diff.append(line)
-		if len(diff) > 1:
+	try:
+		for line in new_set:
+			if not line in old_set and not '\ufeff' in line:
+				diff.append(line)
+		if len(diff) >= 1:
 			return diff
 		else: 
 			return 'None'
@@ -67,9 +68,10 @@ def compute_diff():
 		raise RuntimeError ('Fatal error: something went wrong while building data sets of files')
 
 
-def build_element(diff)
-	
+def build_element(diff):
 	pass
+
+
 	# for every line of text in diff[]:
 		# line is part of xml element, attribute orgName
 		# xml element has attributes
@@ -90,6 +92,8 @@ def main():
 
 	if diff != 'None':
 		# datablocks = build(diff) >> Not built! <<
+		for line in diff:
+			print(line)
 	else:
 		print('No diff today - XML file is up to date.')
 
