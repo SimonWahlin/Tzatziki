@@ -5,6 +5,9 @@ import xml.etree.ElementTree as ET
 
 
 def get_xml_root(xml_source):
+	''' Parse .xml file as source, then return the root element for
+	the file.
+	'''
 	try:
 		base_path = os.path.dirname(os.path.realpath(__file__))
 		tree = ET.parse(os.path.join(base_path, xml_source))
@@ -13,8 +16,11 @@ def get_xml_root(xml_source):
 	except:
 		raise RuntimeError ('error occured parsing .xml file for root')
 
-# parse xml for element data
 def get_old_data(xmlroot):
+	''' Find every 'text' attribute in 'orgname' children in the root
+	being given as argument. These attributes are added to set and returned
+	for comparison.
+	'''
 	old = set()
 	try:
 		for line in xmlroot.iter('orgName'):
@@ -23,8 +29,6 @@ def get_old_data(xmlroot):
 	except:
 		raise RuntimeError ('error occured while parsing .xml file for data')
 
-
-# parse file containing new data
 def get_new_data(new_source):
 	new = set()
 	try:
