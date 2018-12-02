@@ -3,6 +3,17 @@
 import os
 import xml.etree.ElementTree as ET
 
+def main():
+	diff = compute_diff()
+	if diff != 'None':
+		# datablocks = build(diff) >> Not built! <<
+		# for debugging purpose only:
+		priority_int = highest_priority_int()
+		for line in diff:
+			print(line)
+		print(priority_int)
+	else:
+		print('No diff today - XML file is up to date.')
 
 def get_xml_root(xml_source):
 	''' Parse .xml file as source, then return the root element for
@@ -27,7 +38,7 @@ def get_old_data(xmlroot):
 			old.add(line.text)
 		return old
 	except:
-		raise RuntimeError ('error occured while parsing .xml file for data')
+		raise RuntimeError ('Error occured while parsing .xml file for root..')
 
 def get_new_data(new_source):
 	new = set()
@@ -38,8 +49,7 @@ def get_new_data(new_source):
 				new.add(line)
 			return new
 	except:
-		raise RuntimeError ('error occured while parsing file with new data')
-
+		raise RuntimeError ('Error occured while parsing file with new data')
 
 # using this integer to start from, with new elements that will get created.
 def highest_priority_int():
@@ -47,35 +57,35 @@ def highest_priority_int():
 	prio_arr = []
 	root = get_xml_root('GADS_ADM.xml')
 	prio_int = root.findall('plugins/local/plugin/config/users/search/priority')
-	for elem in prio:
+	for elem in prio_int:
 		num = int(elem.text)
 		prio_arr.append(num)
 	highest = max(prio_arr)
 	return highest
 
-
 # calculate diff between the new and old sets
 def compute_diff():
-	diff = []
+	_diff = []
 	root = get_xml_root('GADS_ADM.xml')
 	old_set = get_old_data(root)
 	new_set = get_new_data('new.dat')
 	try:
 		for line in new_set:
 			if not line in old_set and not '\ufeff' in line:
-				diff.append(line)
-		if len(diff) >= 1:
-			return diff
+				_diff.append(line)
+		if len(_diff) >= 1:
+			return _diff
 		else: 
 			return 'None'
 	except:
-		raise RuntimeError ('Fatal error: something went wrong while building data sets of files')
-
+		raise RuntimeError ('Something went wrong while building data sets of files..')
 
 def build_element(diff):
-	pass
-
-
+	''' buld xml tree structure for every line of data in the array given
+	as argument.
+	The purpose is to build new children for these new attributes and add them
+	to the original .xml file.
+	'''
 	# for every line of text in diff[]:
 		# line is part of xml element, attribute orgName
 		# xml element has attributes
@@ -89,17 +99,6 @@ def build_element(diff):
 
 	# verify correctly saved data
 
-
-def main():
-
-	diff = compute_diff()
-
-	if diff != 'None':
-		# datablocks = build(diff) >> Not built! <<
-		for line in diff:
-			print(line)
-	else:
-		print('No diff today - XML file is up to date.')
 
 if __name__ == '__main__':
 	main()
