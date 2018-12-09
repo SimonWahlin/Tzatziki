@@ -10,5 +10,6 @@ This project sets out to create a program that automatically updates an .xml fil
 
 * Todo's:
 
-1. Build .xml element building function(s)?
-2. Have even more fun
+1. Break apart main.py to separate modules using classes
+2. Prettify output data written to .xml file. (right now its all a massive one-liner. Not pretty.) 
+3. Have even more fun !! 
