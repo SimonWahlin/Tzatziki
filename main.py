@@ -27,18 +27,25 @@ def main():
 	diff = compute_diff(old_set, new_set)
 	if diff != 'None':
 		build_element(base_path, xml_name, root, diff, priority_int, tree)
+	else:
+		print(xml_name,'is already up to date.')
 
+
+
+def get_xml_tree(base_path, xml_name):
+	''' Parse the root from .xml file, return tree hierarchy.'''
+	try:
+		tree = ET.parse(os.path.join(base_path, xml_name))
+		return tree
+	except:
+		raise FileNotFoundError (
+			'Could not find xml file in current directory.'
+		)
 
 def get_xml_root(tree):
 	''' Parse .xml file, return the root element for the file. '''
 	_root = tree.getroot()
 	return _root
-
-
-def get_xml_tree(base_path, xml_name):
-	''' Parse the root from .xml file, return tree hierarchy.'''
-	tree = ET.parse(os.path.join(base_path, xml_name))
-	return tree
 
 
 def get_old_data(root):
@@ -91,7 +98,7 @@ def highest_priority_int(root):
 	prio_int = root.findall(
 		'plugins/local/plugin/config/users/search/priority'
 	)
-	if prio_int and prio_int > 0:
+	if prio_int and len(prio_int) > 0:
 		for elem in prio_int:
 			num = int(elem.text)
 			_prio_arr.append(num)
@@ -113,10 +120,7 @@ def compute_diff(old, new):
 		for line in new:
 			if not line in old and not '\ufeff' in line:
 				diff.append(line)
-		if len(diff):
-			return diff
-		else: 
-			return 'None'
+		return diff if len(diff) else 'None'
 	except:
 		raise RuntimeError (
 			'Something went wrong while building data sets for comparison'
@@ -163,7 +167,7 @@ def build_element(base_path, xml_name, root, diff, prio_int, tree):
 			elem.tail = _last_attrib_tail
 
 		tree.write(source_file, encoding='utf-8')
-		print(len(diff), 'new elements were created.')
+		print(len(diff),'new element(s) were created.')
 	except:
 		raise RuntimeError (
 			'Could not create new elements in file', xml_name
