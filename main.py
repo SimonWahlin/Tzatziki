@@ -31,7 +31,6 @@ def main():
 		print(xml_name,'is already up to date.')
 
 
-
 def get_xml_tree(base_path, xml_name):
 	''' Parse the root from .xml file, return tree hierarchy.'''
 	try:
@@ -118,6 +117,8 @@ def compute_diff(old, new):
 	diff = []
 	try:
 		for line in new:
+			line = line.lstrip()
+			line = line.rstrip()
 			if not line in old and not '\ufeff' in line:
 				diff.append(line)
 		return diff if len(diff) else 'None'
