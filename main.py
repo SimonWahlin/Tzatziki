@@ -4,18 +4,7 @@ import os
 import xml.etree.ElementTree as ET
 
 def main():
-	''' Get the data necessary from other functions. 
-		Tree and root objects are created from the xml
-		file being parsed. A set for data from the xml
-		file (old_set) and a set for data from the input 
-		file (new_set) are created and every attribute in 
-		the xml file containing the data sought after in
-		orgName for every "search" element, is compared
-		to find missing data in the xml file compared to
-		data in the input file. This allows for a freshly
-		updated xml file with the latest data. The input
-		file is exported from LDAP server, which is being
-		compared with the contents in the xml file here. '''
+	
 	new = 'new.dat'	
 	xml_name = 'GADS_ADM.xml'
 	base_path = os.path.dirname(os.path.realpath(__file__))
