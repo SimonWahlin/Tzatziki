@@ -3,6 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 
 def main():
+
 	new = 'new.dat'	
 	xml_name = 'GADS_ADM.xml'
 	base_path = os.path.dirname(os.path.realpath(__file__))
