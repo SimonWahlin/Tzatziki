@@ -1,9 +1,12 @@
 
 import os
 import xml.etree.ElementTree as ET
+import xml.dom.minidom
+import re
 
 def main():
 
+	encoding = 'utf-8'
 	new = 'new.dat'	
 	xml_name = 'GADS_ADM.xml'
 	base_path = os.path.dirname(os.path.realpath(__file__))
@@ -15,6 +18,9 @@ def main():
 	diff = compute_diff(old_set, new_set)
 	if diff != 'None':
 		build_element(base_path, xml_name, root, diff, priority_int, tree)
+		new_xml_string = pretty_print_xml(root)
+		with open(os.path.join(base_path, xml_name), 'w', encoding=encoding) as xml_file:
+			xml_file.write(new_xml_string)
 	else:
 		print(xml_name,'is already up to date.')
 
@@ -108,6 +114,23 @@ def compute_diff(old, new):
 			'Something went wrong while building data sets for comparison')
 
 
+def pretty_print_xml(element):
+	''' Take an xml-element and return a string with prettyfied XML
+		Converts the element to string, removes all formating and
+		parses back to XML again before pretty printing'''
+	# Convert to unicode-string to be able to use regex replace
+	org_String = ET.tostring(element, encoding='unicode',method="xml")
+	# Remove all formating linebreaks and tabs (leaves us with single line XML)
+	org_String = re.sub(
+		r"(?<=>)\n\s*",
+		'',
+		org_String
+	)
+	# parse string back to XML and pretty-print
+	parsed_String = xml.dom.minidom.parseString(org_String)
+	return parsed_String.toprettyxml()
+
+
 def build_element(base_path, xml_name, root, diff, prio_int, tree):
 	''' Build new xml subelements for data in diff[] array passed to this function. 
 		The source file is used and appended to. Every 'priority' attribute is 
@@ -116,12 +139,11 @@ def build_element(base_path, xml_name, root, diff, prio_int, tree):
 		a unique ending; it's own 'orgname' text string. This is used by GADS to create 
 		OU's in G Suite.'''  
 	
-	_filter_string = "(&amp;(objectCategory=person)(objectClass=user)" \
+	_filter_string = "(&(objectCategory=person)(objectClass=user)" \
 					"(mail=*katrineholm.se*)(physicalDeliveryOfficeName="
 	_attrib_tail = ('\n' + ('\t'*6 + ' '))
 	_emlem_tail = ('\n'*2 + ('\t'*6))
 	_last_attrib_tail = ('\n' + ('\t'*6))
-	source_file = (os.path.join(base_path, xml_name))
 	parent = root.find('plugins/local/plugin/config/users')
 	try:
 		for data in diff:
@@ -138,15 +160,6 @@ def build_element(base_path, xml_name, root, diff, prio_int, tree):
 			elem_scope.text = "SUBTREE"
 			elem_orgname.text = data
 			elem_filter.text = (_filter_string + data + "))")
-
-			elem_priority.tail = _attrib_tail
-			elem_suspended.tail = _attrib_tail
-			elem_scope.tail = _attrib_tail
-			elem_orgname.tail = _attrib_tail
-			elem_filter.tail = _attrib_tail
-			elem.tail = _last_attrib_tail
-
-		tree.write(source_file, encoding='utf-8')
 		print(len(diff),'new element(s) were created.')
 	except:
 		raise RuntimeError (
