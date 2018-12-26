@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<root>
+	<plugins>
+		<local>
+			<plugin>
+				<config>
+					<users>
+						<search>
+							<priority>2</priority>
+							<suspended>false</suspended>
+							<scope>SUBTREE</scope>
+							<orgName>ORG1</orgName>
+							<filter>(&amp;(objectCategory=person)(objectClass=user)(mail=*katrineholm.se*)(physicalDeliveryOfficeName=ORG1))</filter>
+						</search>
+						<search>
+							<priority>1</priority>
+							<suspended>false</suspended>
+							<scope>SUBTREE</scope>
+							<orgName>ORG2</orgName>
+							<filter>(&amp;(objectCategory=person)(objectClass=user)(mail=*katrineholm.se*)(physicalDeliveryOfficeName=ORG2))</filter>
+						</search>
+					</users>
+				</config>
+			</plugin>
+		</local>
+	</plugins>
+</root>
